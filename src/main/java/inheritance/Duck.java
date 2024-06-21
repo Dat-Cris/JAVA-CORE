@@ -11,10 +11,10 @@ public class Duck extends Animal {
     }
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return "Duck{" +
-                "age=" + age +
-                ", String=" + String +
+                "name='" + name + '\'' +
+                ", age=" + age +
                 '}';
     }
 }

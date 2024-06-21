@@ -10,11 +10,13 @@ public class Circle extends Shape implements Drawable, Extendable  {
 
     @Override
     public double area() {
+
         return radius * radius * Math.PI;
     }
 
     @Override
     public void draw() {
+
         System.out.println("Draw circle");
     }
 
