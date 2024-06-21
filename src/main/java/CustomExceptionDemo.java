@@ -8,7 +8,7 @@ public class CustomExceptionDemo {
             } else {
                 System.out.println("Chào mừng bạn...");
             }
-        } catch (IllegalAccessException exception) {
+        } catch (InvalidAgeException exception) {
             System.out.println(exception.getMessage());
         }
     }
