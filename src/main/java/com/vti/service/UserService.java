@@ -15,29 +15,29 @@ public class UserService implements IUserService {
     private IUserRepository repository;
 
     @Override
-    public List<User> findEmployeeAndManagerByProjectId(int projectId) {
+    public List<User> findEmployeeByProjectId(int projectId) {
         try {
-            return repository.findEmployeeAndManagerByProjectId(projectId);
+            return repository.findEmployeeByProjectId(projectId);
         } catch (SQLException | IOException e) {
             return Collections.emptyList();
         }
     }
 
     @Override
-    public User findAdminByEmailAndPassword(String email, String password) {
+    public List<User> findAllManager() {
         try {
-            return repository.findAdminByEmailAndPassword(email, password);
+            return repository.findAllManager();
         } catch (SQLException | IOException e) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
     @Override
-    public int create(String fullName, String email) {
+    public User findManagerByEmailAndPassword(String email, String password) {
         try {
-            return repository.create(fullName, email);
+            return repository.findManagerByEmailAndPassword(email, password);
         } catch (SQLException | IOException e) {
-            return 0;
+            return null;
         }
     }
 }

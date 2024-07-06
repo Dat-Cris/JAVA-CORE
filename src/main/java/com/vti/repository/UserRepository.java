@@ -10,20 +10,39 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
 public class UserRepository implements IUserRepository {
     @Override
-    public List<User> findEmployeeAndManagerByProjectId(int projectId)
+    public List<User> findAllManager()
             throws SQLException, IOException {
-        String sql = "SELECT * FROM users WHERE role IN ('EMPLOYEE', 'MANAGER') AND project_id = ?";
+        String sql = "SELECT * FROM users WHERE role = 'MANAGER'";
         try (
                 Connection connection = JdbcUtil.getConnection();
-                PreparedStatement stmt = connection.prepareStatement(sql)
+                Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)
         ) {
-            stmt.setInt(1, projectId);
-            try (ResultSet rs = stmt.executeQuery()) {
+            List<User> users = new LinkedList<>();
+            while (rs.next()) {
+                User user = getUser(rs);
+                users.add(user);
+            }
+            return users;
+        }
+    }
+
+    @Override
+    public List<User> findEmployeeByProjectId(int projectId)
+            throws SQLException, IOException {
+        String sql = "SELECT * FROM users WHERE role = 'EMPLOYEE' AND project_id = ?";
+        try (
+                Connection connection = JdbcUtil.getConnection();
+                PreparedStatement pStmt = connection.prepareStatement(sql)
+        ) {
+            pStmt.setInt(1, projectId);
+            try (ResultSet rs = pStmt.executeQuery()) {
                 List<User> users = new LinkedList<>();
                 while (rs.next()) {
                     User user = getUser(rs);
@@ -35,9 +54,9 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
-    public User findAdminByEmailAndPassword(String email, String password)
+    public User findManagerByEmailAndPassword(String email, String password)
             throws SQLException, IOException {
-        String sql = "{CALL find_admin_by_email_and_password(?, ?)}";
+        String sql = "{CALL find_manager_by_email_and_password(?, ?)}";
         try (
                 Connection connection = JdbcUtil.getConnection();
                 CallableStatement cStmt = connection.prepareCall(sql)
@@ -47,20 +66,6 @@ public class UserRepository implements IUserRepository {
             try (ResultSet rs = cStmt.executeQuery()) {
                 return rs.next() ? getUser(rs) : null;
             }
-        }
-    }
-
-    @Override
-    public int create(String fullName, String email)
-            throws SQLException, IOException {
-        String sql = "INSERT INTO users(full_name, email) VALUES (?, ?)";
-        try (
-                Connection connection = JdbcUtil.getConnection();
-                PreparedStatement pStmt = connection.prepareStatement(sql)
-        ) {
-            pStmt.setString(1, fullName);
-            pStmt.setString(2, email);
-            return pStmt.executeUpdate();
         }
     }
 
